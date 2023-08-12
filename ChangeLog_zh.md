@@ -1,7 +1,18 @@
 # 更新
 
+## v1.2.0
+- 整合了hpm_sdk v1.2.0
+  - 注：
+    - SDK根目录下的docs,middleware,samples, scripts等目录被移除
+- 更新
+  - 迁移到rt-thread v5.0.1
+  - 增加了sample README
+  - 增加了 `flash_release` 和 `ram_release` 工程
+  - 增加了 UART RXFIFO timeout 中断支持
+- 修复：
+  - uart 在低波特率下丢数据
 
-## 1.1.0
+## v1.1.0
 - 整合了SDK v1.1.0
   - 注：
     - SDK根目录下的doc, middleware,samples,cmake目录被删除

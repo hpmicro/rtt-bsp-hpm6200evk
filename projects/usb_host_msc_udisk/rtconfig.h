@@ -22,7 +22,6 @@
 
 /* kservice optimization */
 
-#define RT_PRINTF_LONGLONG
 /* end of kservice optimization */
 
 /* Inter-Thread communication */
@@ -49,7 +48,7 @@
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart0"
 /* end of Kernel Device Object */
-#define RT_VER_NUM 0x40100
+#define RT_VER_NUM 0x50001
 /* end of RT-Thread Kernel */
 
 /* RT-Thread Components */
@@ -72,12 +71,16 @@
 #define MSH_USING_BUILT_IN_COMMANDS
 #define FINSH_USING_DESCRIPTION
 #define FINSH_ARG_MAX 10
+
+/* DFS: device virtual file system */
+
 #define RT_USING_DFS
 #define DFS_USING_POSIX
 #define DFS_USING_WORKDIR
+#define DFS_FD_MAX 16
+#define RT_USING_DFS_V1
 #define DFS_FILESYSTEMS_MAX 4
 #define DFS_FILESYSTEM_TYPES_MAX 4
-#define DFS_FD_MAX 16
 #define RT_USING_DFS_ELMFAT
 
 /* elm-chan's FatFs, Generic FAT Filesystem Module */
@@ -93,15 +96,16 @@
 #define RT_DFS_ELM_MAX_SECTOR_SIZE 512
 /* end of elm-chan's FatFs, Generic FAT Filesystem Module */
 #define RT_USING_DFS_DEVFS
+/* end of DFS: device virtual file system */
 
 /* Device Drivers */
 
 #define RT_USING_DEVICE_IPC
+#define RT_UNAMED_PIPE_NUMBER 64
 #define RT_USING_SERIAL
 #define RT_USING_SERIAL_V2
 #define RT_USING_PIN
 #define RT_USING_RTC
-#define RT_USING_SPI
 
 /* Using USB */
 
@@ -270,6 +274,51 @@
 
 /* end of entertainment: terminal games and other interesting software packages */
 /* end of miscellaneous packages */
+
+/* Arduino libraries */
+
+
+/* Projects and Demos */
+
+/* end of Projects and Demos */
+
+/* Sensors */
+
+/* end of Sensors */
+
+/* Display */
+
+/* end of Display */
+
+/* Timing */
+
+/* end of Timing */
+
+/* Data Processing */
+
+/* end of Data Processing */
+
+/* Data Storage */
+
+/* Communication */
+
+/* end of Communication */
+
+/* Device Control */
+
+/* end of Device Control */
+
+/* Other */
+
+/* end of Other */
+
+/* Signal IO */
+
+/* end of Signal IO */
+
+/* Uncategorized */
+
+/* end of Arduino libraries */
 /* end of RT-Thread online packages */
 
 /* Hardware Drivers Config */
@@ -283,8 +332,6 @@
 #define BSP_USING_UART0
 #define BSP_UART0_RX_BUFSIZE 128
 #define BSP_UART0_TX_BUFSIZE 0
-#define BSP_USING_SPI
-#define BSP_USING_SPI1
 #define BSP_USING_RTC
 #define BSP_USING_USB
 #define BSP_USING_USB_HOST

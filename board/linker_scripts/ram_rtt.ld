@@ -5,15 +5,15 @@
 
 ENTRY(_start)
 
-STACK_SIZE = DEFINED(_stack_size) ? _stack_size : 0x4000;
-HEAP_SIZE = DEFINED(_heap_size) ? _heap_size : 0x18000;
-NONCACHEABLE_SIZE = DEFINED(_noncacheable_size) ? _noncacheable_size : 0x4000;
+STACK_SIZE = DEFINED(_stack_size) ? _stack_size : 0x2000;
+HEAP_SIZE = DEFINED(_heap_size) ? _heap_size : 0x8000;
+NONCACHEABLE_SIZE = DEFINED(_noncacheable_size) ? _noncacheable_size : 0x10000;
 
 MEMORY
 {
     ILM (wx) : ORIGIN = 0, LENGTH = 128K
-    DLM (w) : ORIGIN = 0x80000, LENGTH = 128K
-    AXI_SRAM_NONCACHEABLE (wx) : ORIGIN = 0x01080000, LENGTH = 16K
+    DLM (w) : ORIGIN = 0x80000, LENGTH = 96K
+    NONCACHEABLE_RAM (wx) : ORIGIN = 0x90000, LENGTH = NONCACHEABLE_SIZE
     AXI_SRAM  (wx) : ORIGIN = 0x01084000, LENGTH = 224K
     SHARE_RAM (w) : ORIGIN = 0x010BC000, LENGTH = 16K
     AHB_SRAM (w) : ORIGIN = 0xF0300000, LENGTH = 32k
@@ -24,14 +24,14 @@ SECTIONS
     .start : {
         . = ALIGN(8);
         KEEP(*(.start))
-    } > AXI_SRAM
+    } > ILM
 
     .vectors : {
         . = ALIGN(8);
         KEEP(*(.isr_vector))
         KEEP(*(.vector_table))
         . = ALIGN(8);
-    } > AXI_SRAM
+    } > ILM
 
     .text : {
         . = ALIGN(8);
@@ -94,8 +94,46 @@ SECTIONS
         KEEP(*(.rel*))
     } > AXI_SRAM
 
+    .fast_ram (NOLOAD) : {
+        KEEP(*(.fast_ram))
+    } > DLM
 
-    .data : AT(etext) {
+    .bss(NOLOAD) : {
+        . = ALIGN(8);
+        __bss_start__ = .;
+        *(.bss)
+        *(.bss*)
+        *(.sbss*)
+        *(.scommon)
+        *(.scommon*)
+        *(.dynsbss*)
+        *(COMMON)
+        . = ALIGN(8);
+        _end = .;
+        __bss_end__ = .;
+    } > DLM
+
+    /* Note: .tbss and .tdata should be adjacent */
+    .tbss(NOLOAD) : {
+        . = ALIGN(8);
+        __tbss_start__ = .;
+        *(.tbss*)
+        *(.tcommon*)
+        _end = .;
+        __tbss_end__ = .;
+    } > DLM
+
+    .tdata : AT(etext) {
+        . = ALIGN(8);
+        __tdata_start__ = .;
+        __thread_pointer = .;
+        *(.tdata)
+        *(.tdata*)
+        . = ALIGN(8);
+        __tdata_end__ = .;
+    } > DLM
+
+    .data : AT(etext + __tdata_end__ - __tdata_start__) {
         . = ALIGN(8);
         __data_start__ = .;
         __global_pointer$ = . + 0x800;
@@ -103,8 +141,6 @@ SECTIONS
         *(.data*)
         *(.sdata)
         *(.sdata*)
-        *(.tdata)
-        *(.tdata*)
 
         KEEP(*(.jcr))
         KEEP(*(.dynamic))
@@ -139,12 +175,6 @@ SECTIONS
         PROVIDE(__ctors_end__ = .);
 
         . = ALIGN(8);
-        KEEP(*crtbegin*.o(.ctors))
-        KEEP(*(EXCLUDE_FILE (*crtend*.o) .ctors))
-        KEEP(*(SORT(.ctors.*)))
-        KEEP(*(.ctors))
-
-        . = ALIGN(8);
         KEEP(*crtbegin*.o(.dtors))
         KEEP(*(EXCLUDE_FILE (*crtend*.o) .dtors))
         KEEP(*(SORT(.dtors.*)))
@@ -157,31 +187,21 @@ SECTIONS
         PROVIDE (edata = .);
     } > DLM
 
-    .fast : AT(etext + __data_end__ - __data_start__) {
+    .fast : AT(etext + __data_end__ - __tdata_start__) {
         . = ALIGN(8);
         PROVIDE(__ramfunc_start__ = .);
         *(.fast)
         . = ALIGN(8);
         PROVIDE(__ramfunc_end__ = .);
-    } > AXI_SRAM
+    } > ILM
 
-    .noncacheable_bss (NOLOAD): {
-     . = ALIGN(1024);
-     __noncacheable_bss_start__ = .;
-        KEEP(*(.noncacheable.bss))
-        __noncacheable_bss_end__ = .;
-    } > DLM
-
-    .noncacheable : AT(etext + __data_end__ - __data_start__ + __ramfunc_end__ - __ramfunc_start__){
+    .noncacheable.init : AT(etext + __data_end__ - __tdata_start__ + __ramfunc_end__ - __ramfunc_start__) {
         . = ALIGN(8);
         __noncacheable_init_start__ = .;
         KEEP(*(.noncacheable.init))
         __noncacheable_init_end__ = .;
-        KEEP(*(.noncacheable))
         . = ALIGN(8);
-    } > AXI_SRAM_NONCACHEABLE
-    __noncacheable_start__ = ORIGIN(AXI_SRAM_NONCACHEABLE);
-    __noncacheable_end__ = ORIGIN(AXI_SRAM_NONCACHEABLE) + LENGTH(AXI_SRAM_NONCACHEABLE);
+    } > NONCACHEABLE_RAM
 
     .sh_mem (NOLOAD) : {
         KEEP(*(.sh_mem))
@@ -189,41 +209,36 @@ SECTIONS
     __share_mem_start__ = ORIGIN(SHARE_RAM);
     __share_mem_end__ = ORIGIN(SHARE_RAM) + LENGTH(SHARE_RAM);
 
-    .bss : {
+    .noncacheable.bss (NOLOAD) : {
         . = ALIGN(8);
-        __bss_start__ = .;
-        *(.bss)
-        *(.bss*)
-        *(.tbss*)
-        *(.sbss*)
-        *(.scommon)
-        *(.scommon*)
-        *(.tcommon*)
-        *(.dynsbss*)
-        *(COMMON)
+        KEEP(*(.noncacheable))
+        __noncacheable_bss_start__ = .;
+        KEEP(*(.noncacheable.bss))
+        __noncacheable_bss_end__ = .;
         . = ALIGN(8);
-        _end = .;
-        __bss_end__ = .;
-    } > DLM
+    } > NONCACHEABLE_RAM
 
-    .stack : {
+    __noncacheable_start__ = ORIGIN(NONCACHEABLE_RAM);
+    __noncacheable_end__ = ORIGIN(NONCACHEABLE_RAM) + LENGTH(NONCACHEABLE_RAM);
+
+     .ahb_sram (NOLOAD) : {
+        KEEP(*(.ahb_sram))
+    } > AHB_SRAM
+
+    .stack(NOLOAD) : {
         . = ALIGN(8);
         __stack_base__ = .;
         . += STACK_SIZE;
         PROVIDE (_stack = .);
         PROVIDE (_stack_in_dlm = .);
+        PROVIDE (__rt_rvstack = .);
     } > DLM
 
-    .framebuffer (NOLOAD) : {
-        KEEP(*(.framebuffer))
-    } > AXI_SRAM
-
-    .heap : {
-        . += 8;             /* Skip address 0, avoid RT_ASSERT error on HEAP address check */
+    .heap (NOLOAD) : {
         . = ALIGN(8);
         __heap_start__ = .;
         . += HEAP_SIZE;
         __heap_end__ = .;
 
-    } > ILM
+    } > DLM
 }

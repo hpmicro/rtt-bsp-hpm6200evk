@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 hpmicro
+ * Copyright (c) 2021 HPMicro
  *
  * Change Logs:
  * Date         Author          Notes
@@ -36,6 +36,8 @@ static rt_device_t serial;
 /* 消息队列控制块 */
 static struct rt_messagequeue rx_mq;
 
+static rt_thread_t uart_thread = RT_NULL;
+
 /* 接收数据回调函数 */
 static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
 {
@@ -58,14 +60,14 @@ static void serial_thread_entry(void *parameter)
     struct rx_msg msg;
     rt_err_t result;
     rt_uint32_t rx_length;
-    __attribute__((section(".noncacheable"), aligned(4))) static char rx_buffer[BSP_UART2_RX_BUFSIZE];
+    __attribute__((section(".noncacheable"), aligned(4))) static char rx_buffer[BSP_UART6_RX_BUFSIZE];
 
     while (1)
     {
         rt_memset(&msg, 0, sizeof(msg));
         /* 从消息队列中读取消息 */
         result = rt_mq_recv(&rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
-        if (result == RT_EOK)
+        if (result >= 0)
         {
             /* 从串口读取数据 */
             rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
@@ -85,6 +87,11 @@ static int uart_dma_sample(int argc, char *argv[])
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;  /* 初始化配置参数 */
     static char msg_pool[256];
     __attribute__((section(".noncacheable.init"), aligned(4))) static char str[] = "hello RT-Thread!\r\n";
+
+    if (uart_thread) {
+        rt_kprintf("uart_dma_sample thread already exists!\n");
+        return ret;
+    }
 
     if (argc == 2)
     {
@@ -127,11 +134,11 @@ static int uart_dma_sample(int argc, char *argv[])
     rt_device_write(serial, 0, str, (sizeof(str) - 1));
 
     /* 创建 serial 线程 */
-    rt_thread_t thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
+    uart_thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
     /* 创建成功则启动线程 */
-    if (thread != RT_NULL)
+    if (uart_thread != RT_NULL)
     {
-        rt_thread_startup(thread);
+        rt_thread_startup(uart_thread);
     }
     else
     {
