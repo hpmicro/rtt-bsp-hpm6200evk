@@ -387,7 +387,7 @@ uint32_t board_init_spi_clock(SPI_Type *ptr);
 
 uint32_t board_init_lin_clock(LIN_Type *ptr);
 
-uint32_t board_init_adc16_clock(ADC16_Type *ptr);
+uint32_t board_init_adc16_clock(ADC16_Type *ptr, bool clk_src_ahb);
 
 uint32_t board_init_dac_clock(DAC_Type *ptr, bool clk_src_ahb);
 
