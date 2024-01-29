@@ -194,6 +194,6 @@
 #define BSP_USING_RTC
 #define BSP_USING_ADC
 #define BSP_USING_ADC16
-#define BSP_USING_ADC1
+#define BSP_USING_ADC0
 
 #endif

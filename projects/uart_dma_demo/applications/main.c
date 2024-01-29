@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 HPMicro
+ * Copyright (c) 2021 hpmicro
  *
  * Change Logs:
  * Date         Author          Notes
@@ -15,15 +15,13 @@ void thread_entry(void *arg);
 /*
  * 程序清单：这是一个串口设备 开启 DMA 模式后使用例程
  * 例程导出了 uart_dma_sample 命令到控制终端
- * 命令调用格式：uart_dma_sample uart6
+ * 命令调用格式：uart_dma_sample uart1
  * 命令解释：命令第二个参数是要使用的串口设备名称，为空则使用默认的串口设备
  * 程序功能：通过串口输出字符串 "hello RT-Thread!"，并通过串口输出接收到的数据，然后打印接收到的数据。
 */
 
 #include <rtthread.h>
 #include <rtdevice.h>
-
-#define SAMPLE_UART_NAME       "uart6"      /* 串口设备名称 */
 
 /* 串口接收消息结构 */
 struct rx_msg
@@ -60,7 +58,7 @@ static void serial_thread_entry(void *parameter)
     struct rx_msg msg;
     rt_err_t result;
     rt_uint32_t rx_length;
-    __attribute__((section(".noncacheable"), aligned(4))) static char rx_buffer[BSP_UART6_RX_BUFSIZE];
+    __attribute__((section(".noncacheable"), aligned(4))) static char rx_buffer[BOARD_UART_RX_BUFFER_SIZE];
 
     while (1)
     {
@@ -84,7 +82,6 @@ static int uart_dma_sample(int argc, char *argv[])
 {
     rt_err_t ret = RT_EOK;
     char uart_name[RT_NAME_MAX];
-    struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;  /* 初始化配置参数 */
     static char msg_pool[256];
     __attribute__((section(".noncacheable.init"), aligned(4))) static char str[] = "hello RT-Thread!\r\n";
 
@@ -99,7 +96,7 @@ static int uart_dma_sample(int argc, char *argv[])
     }
     else
     {
-        rt_strncpy(uart_name, SAMPLE_UART_NAME, RT_NAME_MAX);
+        rt_strncpy(uart_name, BOARD_UART_NAME, RT_NAME_MAX);
     }
 
     /* 查找串口设备 */
@@ -109,15 +106,6 @@ static int uart_dma_sample(int argc, char *argv[])
         rt_kprintf("find %s failed!\n", uart_name);
         return RT_ERROR;
     }
-    /* step2：修改串口配置参数 */
-    config.baud_rate = BAUD_RATE_115200;        // 修改波特率为 115200
-    config.data_bits = DATA_BITS_8;           // 数据位 8
-    config.stop_bits = STOP_BITS_1;           // 停止位 1
-    config.rx_bufsz  = 1024;                // 修改缓冲区 rx buff size 为 128
-    config.parity    = PARITY_NONE;           // 无奇偶校验位
-
-    /* step3：控制串口设备。通过控制接口传入命令控制字，与控制参数 */
-    rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
 
     /* 初始化消息队列 */
     rt_mq_init(&rx_mq, "rx_mq",
@@ -126,8 +114,8 @@ static int uart_dma_sample(int argc, char *argv[])
                sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
                RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
 
-    /* 以 DMA 接收及轮询发送方式打开串口设备 */
-    rt_device_open(serial, RT_DEVICE_FLAG_RX_NON_BLOCKING | RT_DEVICE_FLAG_TX_BLOCKING);
+    /* 以 硬件FIFO超时接收及轮询发送方式打开串口设备 */
+    rt_device_open(serial, RT_DEVICE_FLAG_RX_BLOCKING | RT_DEVICE_FLAG_TX_BLOCKING);
     /* 设置接收回调函数 */
     rt_device_set_rx_indicate(serial, uart_input);
     /* 发送字符串 */
@@ -153,6 +141,8 @@ MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
 
 int main(void)
 {
+    app_init_led_pins();
+
     static uint32_t led_thread_arg = 0;
     rt_thread_t led_thread = rt_thread_create("led_th", thread_entry, &led_thread_arg, 1024, 1, 10);
     rt_thread_startup(led_thread);
@@ -162,12 +152,19 @@ int main(void)
 
 void thread_entry(void *arg)
 {
-    rt_pin_mode(APP_LED0_PIN_NUM, PIN_MODE_OUTPUT);
-
     while(1){
-        rt_pin_write(APP_LED0_PIN_NUM, APP_LED_ON);
+
+        app_led_write(0, APP_LED_ON);
         rt_thread_mdelay(500);
-        rt_pin_write(APP_LED0_PIN_NUM, APP_LED_OFF);
+        app_led_write(0, APP_LED_OFF);
+        rt_thread_mdelay(500);
+        app_led_write(1, APP_LED_ON);
+        rt_thread_mdelay(500);
+        app_led_write(1, APP_LED_OFF);
+        rt_thread_mdelay(500);
+        app_led_write(2, APP_LED_ON);
+        rt_thread_mdelay(500);
+        app_led_write(2, APP_LED_OFF);
         rt_thread_mdelay(500);
     }
 }
