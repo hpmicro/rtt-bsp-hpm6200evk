@@ -1,5 +1,17 @@
 # Change Log
 
+## v1.5.0
+
+- Integrated hpm_sdk v1.5.0
+- Updated:
+    - usb stack switched to cherryUSB for usb samples
+- Fixed:
+    - MCAN sample read data error when enable RT_CAN_USING_HDR
+- Added:
+    - added interrupt vector mode and preemptive mode
+    - pwm sample
+    - systemView component
+
 ## 1.4.1
 - Fixed:
   - Transmission error while enabling DMA in I2C driver

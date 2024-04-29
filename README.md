@@ -7,6 +7,7 @@ RT-Thread Studio BSP for HPM6200EVK Board
 - blink_led
 - flashdb_demo
 - mcan_example
+- pwm_demo
 - timer_demo
 - uart_dma_demo
 - usb_device_generic_hid

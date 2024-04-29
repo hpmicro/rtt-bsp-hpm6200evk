@@ -29,7 +29,7 @@ free             - Show the memory usage in the system.
 pin              - pin [option]
 date             - get date and time or set (local timezone) [year month day hour min sec]
 ```
-测试时请使用 `uart_dma_sample uart6` 命令
+测试时请使用 `uart_dma_sample` 命令
 
 ## 运行现象
 ```console
