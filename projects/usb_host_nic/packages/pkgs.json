@@ -1,0 +1,12 @@
+[
+ {
+  "path": "/packages/iot/netutils", 
+  "ver": "latest", 
+  "name": "NETUTILS"
+ }, 
+ {
+  "path": "/packages/system/CherryUSB", 
+  "ver": "v1.3.1", 
+  "name": "CHERRYUSB"
+ }
+]

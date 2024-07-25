@@ -102,24 +102,48 @@ menu "On-chip Peripheral Drivers"
                 default y
                 if BSP_USING_SPI1
                     config BSP_SPI1_USING_DMA
-                    bool "Enable SPI1 DMA"
-                    default n
+                        bool "Enable SPI1 DMA"
+                        default n
+                    choice
+                        prompt "Select SPI1 CS TYPE"
+                        default BSP_SPI1_USING_SOFT_CS
+                        config BSP_SPI1_USING_SOFT_CS
+                            bool "Enable SPI1 software cs"
+                        config BSP_SPI1_USING_HARD_CS
+                            bool "Enable SPI1 hardware cs"
+                    endchoice
                 endif
             config BSP_USING_SPI2
                 bool "Enable SPI2"
                 default n
                 if BSP_USING_SPI2
                     config BSP_SPI2_USING_DMA
-                    bool "Enable SPI2 DMA"
-                    default n
+                        bool "Enable SPI2 DMA"
+                        default n
+                    choice
+                        prompt "Select SPI2 CS TYPE"
+                        default BSP_SPI2_USING_SOFT_CS
+                        config BSP_SPI2_USING_SOFT_CS
+                            bool "Enable SPI2 software cs"
+                        config BSP_SPI2_USING_HARD_CS
+                            bool "Enable SPI2 hardware cs"
+                    endchoice
                 endif
             config BSP_USING_SPI3
                 bool "Enable SPI3"
                 default n
                 if BSP_USING_SPI3
                     config BSP_SPI3_USING_DMA
-                    bool "Enable SPI3 DMA"
-                    default n
+                        bool "Enable SPI3 DMA"
+                        default n
+                    choice
+                        prompt "Select SPI3 CS TYPE"
+                        default BSP_SPI3_USING_SOFT_CS
+                        config BSP_SPI3_USING_SOFT_CS
+                            bool "Enable SPI3 software cs"
+                        config BSP_SPI3_USING_HARD_CS
+                            bool "Enable SPI3 hardware cs"
+                    endchoice
                 endif
         endif
 
@@ -192,6 +216,17 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable USB HOST"
                 select RT_USING_CACHE
                 default n
+            if PKG_CHERRYUSB_HOST_ASIX || PKG_CHERRYUSB_HOST_RTL8152
+                config LWIP_TCPIP_CORE_LOCKING_INPUT
+                    int
+                    default 1
+                config LWIP_TCPIP_CORE_LOCKING
+                    int
+                    default 1
+                config RT_LWIP_PBUF_POOL_BUFSIZE
+                    int
+                    default 1600
+            endif
        endif
 
 

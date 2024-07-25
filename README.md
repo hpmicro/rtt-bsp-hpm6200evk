@@ -12,3 +12,4 @@ RT-Thread Studio BSP for HPM6200EVK Board
 - uart_dma_demo
 - usb_device_generic_hid
 - usb_host_msc_udisk
+- usb_host_nic
