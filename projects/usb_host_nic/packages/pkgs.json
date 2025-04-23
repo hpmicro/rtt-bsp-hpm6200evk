@@ -1,12 +1,12 @@
 [
  {
-  "path": "/packages/iot/netutils", 
-  "ver": "latest", 
-  "name": "NETUTILS"
- }, 
+  "name": "NETUTILS",
+  "path": "/packages/iot/netutils",
+  "ver": "latest"
+ },
  {
-  "path": "/packages/system/CherryUSB", 
-  "ver": "v1.3.1", 
-  "name": "CHERRYUSB"
+  "name": "CHERRYUSB",
+  "path": "/packages/system/CherryUSB",
+  "ver": "v1.4.3"
  }
 ]
