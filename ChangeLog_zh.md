@@ -1,34 +1,52 @@
 # 更新
 
+## v1.10.0
+
+- 整合了 hpm_sdk v1.10.0
+
+- 更新：
+  - 升级CherryUSB协议栈到1.5.0
+  - RTC驱动支持闹钟警报设置和获取
+  - RTC驱动支持 `timeval` 的设置和获取
+
+- 修复：
+  - 修复RTC驱动只支持32bit timestamp问题，可根据time_t长度支持32bit和64bit timestamp
+  - 修复中断向量模式在某些条件下工作异常的问题
+  - 修复shell 执行`reset`命令后，看门狗复位失效的问题
+
+- 新增
+  - 支持zcc编译器
+  - 支持SEGGER Embedded Studio IDE，版本为8.24
+
 ## v1.9.0
 
 - 整合了 hpm_sdk v1.9.0
 
 - 更新：
-    - 升级CherryUSB协议栈到1.4.3
-    - `uart/uart_v2`驱动支持可配置的IRQ优先级
-    - `spi`驱动支持可配置的IRQ优先级
-    - `i2c`驱动支持可配置的IRQ优先级
-    - `gpio`驱动支持可配置的IRQ优先级
-    - `mcan`驱动支持可配置的IRQ优先级
+  - 升级CherryUSB协议栈到1.4.3
+  - `uart/uart_v2`驱动支持可配置的IRQ优先级
+  - `spi`驱动支持可配置的IRQ优先级
+  - `i2c`驱动支持可配置的IRQ优先级
+  - `gpio`驱动支持可配置的IRQ优先级
+  - `mcan`驱动支持可配置的IRQ优先级
 
 - 新增:
-    - `spi`驱动增加DSPI/QSPI模式
+  - `spi`驱动增加DSPI/QSPI模式
 
 ## v1.6.0
 
 - 整合了hpm_sdk v1.6.0
 - 修复:
-    - UART7 和 UART8 TX DMA 相关的宏定义错误问题
-    - uart_v2 中的内存泄露问题
+  - UART7 和 UART8 TX DMA 相关的宏定义错误问题
+  - uart_v2 中的内存泄露问题
 - 更新：
-    - 优化CANFD帧的BRS位控制
-    - 升级CherryUSB协议栈到1.3.1
-    - 为USB例程增加了全速模式相关的描述符
-    - 芯片的数据手册
+  - 优化CANFD帧的BRS位控制
+  - 升级CherryUSB协议栈到1.3.1
+  - 为USB例程增加了全速模式相关的描述符
+  - 芯片的数据手册
 - 新增:
-    - SPI 的CS引脚控制选项
-    - 适配了RT-Thread Cache 驱动
+  - SPI 的CS引脚控制选项
+  - 适配了RT-Thread Cache 驱动
 - 新增示例：
   - usb_host_nic (USB网络接口卡/USB网卡)
 
@@ -36,20 +54,22 @@
 
 - 整合了hpm_sdk v1.5.0
 - 更新:
-    - USB相关sample协议栈切换为cherryUSB
+  - USB相关sample协议栈切换为cherryUSB
 - 修复:
-    - MCAN sample开启硬件过滤器读取数据错误的问题
+  - MCAN sample开启硬件过滤器读取数据错误的问题
 - 新增:
-    - 增加中断向量模式和可抢占模式
-    - pwm sample
-    - systemView组件
+  - 增加中断向量模式和可抢占模式
+  - pwm sample
+  - systemView组件
 
 ## v1.4.1
+
 - 修复：
   - I2C开启DMA后传输出错的问题
   - 默认模板工程创建出错的问题
 
 ## v1.4.0
+
 - 整合了 hpm_sdk v1.4.0
 - 升级RT-Thread 到 v5.0.2
 - 更新：
@@ -61,6 +81,7 @@
   - 修复了`pwm`驱动返回值类型不匹配的问题
 
 ## v1.3.0
+
 - 整合了hpm_sdk v1.3.0
   - 注：
     - SDK根目录下的docs,middleware,samples, scripts等目录被移除
@@ -75,6 +96,7 @@
   - GPIO在配置为开漏极并上拉模式后无法正确的读出引脚的电平
 
 ## v1.2.0
+
 - 整合了hpm_sdk v1.2.0
   - 注：
     - SDK根目录下的docs,middleware,samples, scripts等目录被移除
@@ -87,6 +109,7 @@
   - uart 在低波特率下丢数据
 
 ## v1.1.0
+
 - 整合了SDK v1.1.0
   - 注：
     - SDK根目录下的doc, middleware,samples,cmake目录被删除

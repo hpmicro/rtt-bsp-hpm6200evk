@@ -2,14 +2,22 @@
 
 ## 概述
 
-本示例工程展示USB作为主机驱动USB网卡，目前支持RTL8152和ASIX8872B两款USB网卡
-
-- USB主机枚举成功USB网卡后，会自动对接rtthread lwip，可使用rtthread的SAL接口。
+本示例演示了如何通过 USB Host 模式驱动 USB 网卡，并实现网络功能。以下是核心特性
+- 自动识别`RTL8152` 和 `ASIX8872B` 两种常见 USB 网卡芯片
+- `无需手动配置，系统可自动适配并加载对应驱动`
+- USB 主机枚举与网络集成
+  - 成功识别网卡后，自动完成 USB 主机的枚举流程
+  - 无缝对接 RT-Thread LwIP 协议栈，支持 TCP/IP 网络通信
+  - 提供 RT-Thread SAL 接口，方便应用层调用网络功能
 
 ## 硬件设置
 
 - 使用USB Type-C线缆连接PC USB端口和PWR DEBUG端口
 - 使用USB Type-C转USB-A线缆连接USB网卡，有些USB网卡是Type-C接口，可以不需要Type-C转USB-A线缆。
+
+## 注意
+- 默认启用 `DHCP 协议`，自动请求 IP 地址分配
+- 需确保网络环境已配置 `DHCP 服务`（如路由器或局域网中存在 DHCP 服务器）
 
 ## 运行示例
 
@@ -83,7 +91,7 @@ msh />[I/USB] EHCI uses tt for ls/fs device
 
 ```
 
-- 等待网络初始化完毕，默认使能DHCP,敲击ifconfig，查看是否自动分配IP，如出现以下说明网络初始化成功
+- 敲击`ifconfig`，查看是否自动分配IP地址，如出现以下说明网络初始化成功
 
 ```console
 
