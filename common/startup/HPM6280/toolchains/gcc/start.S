@@ -63,6 +63,7 @@ _start:
 nmi_handler:
 1:    j 1b
 
+#ifndef HPM_USING_RTTHREAD_INTERRUPT_FRAMEWORK
     .weak default_irq_handler
     .align 2
 default_irq_handler:
@@ -75,3 +76,13 @@ default_irq_handler:
     .endm
 
 #include "vectors.S"
+#else
+    .section .vector_table, "a"
+    .global __vector_table
+    .align 9
+
+__vector_table:
+    .rept RT_HW_ISR_NUM
+    .long handle_trap
+    .endr
+#endif /* #ifdef HPM_USING_RTTHREAD_INTERRUPT_FRAMEWORK */
